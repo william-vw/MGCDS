@@ -1,0 +1,57 @@
+@prefix fhir: <http://hl7.org/fhir/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix : <http://example.com/> .
+
+:patient1 a fhir:Patient;
+  fhir:Patient.name [
+     fhir:index 0;
+     fhir:HumanName.use [ fhir:value "usual" ];
+     fhir:HumanName.family [ fhir:value "Williams" ]
+  ];
+  fhir:Patient.gender [ fhir:value "female"];
+  fhir:Patient.birthDate [ fhir:value "1945-12-01"^^xsd:date];
+  fhir:Patient.deceasedBoolean [ fhir:value "false"^^xsd:boolean].
+  
+:weight_pt1 a fhir:Observation ;
+	fhir:Observation.subject [ fhir:Reference.reference :patient1 ] ;
+	fhir:Observation.code [
+		fhir:CodeableConcept.coding [
+			fhir:Coding.system <http://loinc.org> ;
+			fhir:Coding.code "29463-7"
+		]
+	] ;
+	fhir:Observation.valueQuantity [
+		fhir:Observation.valueQuantity.value 70 ;
+		fhir:Observation.valueQuantity.system <http://unitsofmeasure.org> ;
+		fhir:Observation.valueQuantity.code "kg"
+	] .
+	
+:height_pt1 a fhir:Observation ;
+	fhir:Observation.subject [ fhir:Reference.reference :patient1 ] ;
+	fhir:Observation.code [
+		fhir:CodeableConcept.coding [
+			fhir:Coding.system <http://loinc.org> ;
+			fhir:Coding.code "8302-2"
+		]
+	] ;
+	fhir:Observation.valueQuantity [
+		fhir:Observation.valueQuantity.value 172 ;
+		fhir:Observation.valueQuantity.system <http://unitsofmeasure.org> ;
+		fhir:Observation.valueQuantity.code "cm"
+	] .
+	
+:bmi_pt1 a fhir:Observation ;
+	fhir:Observation.subject [ fhir:Reference.reference :patient1 ] ;
+	fhir:Observation.code [
+		fhir:CodeableConcept.coding [
+			fhir:Coding.system <http://loinc.org> ;
+			fhir:Coding.code "39156-5"
+		]
+	] ;
+	fhir:Observation.valueQuantity [
+		fhir:Observation.valueQuantity.value 23.7 ;
+		fhir:Observation.valueQuantity.system <http://unitsofmeasure.org> ;
+		fhir:Observation.valueQuantity.code "kg/m2"
+	] .

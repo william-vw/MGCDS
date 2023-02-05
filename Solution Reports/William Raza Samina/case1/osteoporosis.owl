@@ -1,0 +1,75 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix skos: <http://www.w3.org/2004/02/skos/core#>.
+@prefix xml: <http://www.w3.org/XML/1998/namespace>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix dc: <http://purl.org/dc/terms/> .
+@prefix drug: <http://bio2rdf.org/drug:> .
+@prefix sct: <http://snomed.info/id/> .
+@prefix math: <http://www.semanticweb.org/ontologies/2012/5/MathOnt.owl#>.
+@prefix cig: <http://niche.cs.dal.ca/ns/cig-into#> .
+
+@prefix : <http://niche.cs.dal.ca/ns/cig-into#>.
+@base <http://niche.cs.dal.ca/ns/cig-into#>.
+
+:Osteoporosis a :MedicalWorkflow ;
+	dc:source """American Association of Clinical Endocrinologists and American College of Endocrinology Clinical Practice Guidelines for the Diagnosis and Treatment of Postmenopausal Osteoporosis. 2016, Endocrine Practice. pp. 3,6,14,15. 
+Found at https://drive.google.com/file/d/1sK-0Bw_4DAyfO3nPqXX-1ScZ5VsSNNtL/view?usp=sharing""" ;
+	:hasTask :osteoporosis_diagnosis , :diagnosis_outcome , :osteoporosis_treatment ;
+	:hasFirstTask :osteoporosis_diagnosis .
+
+:osteoporosis_diagnosis a :Split ;
+	rdfs:label "Diagnose Osteoporosis" ;
+	:hasBranch :history_exam , :frax , :bmd .
+
+:history_exam
+	rdfs:label "Detailed history and physical exam" ;
+	:order 0 ;
+	rdfs:comment """A detailed history, physical exam, and [..] should be included in the initial evaluation for osteoporosis (Grade B; BEL 2).""" .
+
+:frax 
+	rdfs:label "Fracture Risk Assessment Tool (FRAX)" ;
+	:order 1 ;
+	rdfs:comment """[..] and clinical fracture risk assessment with the Fracture Risk Assessment Tool (FRAX®) should be included in the initial evaluation for osteoporosis (Grade B; BEL 2).""" .
+
+:bmd
+	rdfs:label "Bone mineral density (BMD) assessment" ;
+	:order 2 ;
+	rdfs:comment """R3. Consider bone mineral density (BMD) testing based on clinical fracture risk profile (Grade B; BEL 2).
+R4. When BMD is measured, axial dual-energy X-ray absorptiometry (DXA) measurement (spine and hip) should be used (Grade B; BEL 2).""" .
+
+:diagnosis_outcome a :Synch ;
+	:isWaitingForTask :history_exam , :frax , :bmd ;
+	:hasOutcome :positive , :negative .
+	
+:osteoporosis_treatment a :CompositeTask ;
+	rdfs:label "Osteoporosis treatment" ;
+	:hasCondition :positive ;
+	:hasTask :drug_treatment , :stop_contributing_factors .
+
+:halt
+	rdfs:label "Halt" ;
+	:hasCondition :negative .
+
+:drug_treatment
+	rdfs:label "Decide drug treatment" ;
+	:hasOutcome :high_fracture_risk ;
+	rdfs:comment """Patients with high risk for future fractures (>=20%) should be given medications to reduce the risk.""" .
+
+:reduce_fractures
+	rdfs:label "Drugs to reduce fractures" ;
+	:hasCondition :high_fracture_risk ;
+	rdfs:comment """R23. Approved agents with efficacy to reduce hip, non-vertebral, and spine fractures including alendronate, risedronate, zoledronic acid, and denosumab are appropriate as initial therapy for most patients at high risk of fracture (Grade A; BEL 1).""" .
+
+:stop_contributing_factors
+	rdfs:label "Suspend contributing factors" ;
+	rdfs:comment """If the patient is taking a drug (e.g., PPI) known to be a contributing factor to osteoporosis, consider stopping that drug.""" ;
+	:involves :suspend_contrib_drugs .
+
+:suspend_contrib_drugs a sct:Prescription; 
+	sct:drugUsed drug:7753 .
+	
+drug:7753 
+	rdfs:label "Proton Pump Inhibitors" ;
+	dc:source "DrugCentral" .

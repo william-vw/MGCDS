@@ -1,0 +1,78 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix skos: <http://www.w3.org/2004/02/skos/core#>.
+@prefix xml: <http://www.w3.org/XML/1998/namespace>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix dc: <http://purl.org/dc/terms/> .
+@prefix drug: <http://bio2rdf.org/drug:> .
+@prefix sct: <http://snomed.info/id/> .
+@prefix math: <http://www.semanticweb.org/ontologies/2012/5/MathOnt.owl#>.
+@prefix cig: <http://niche.cs.dal.ca/ns/cig-into#> .
+
+@prefix : <http://niche.cs.dal.ca/ns/cig-into#>.
+@base <http://niche.cs.dal.ca/ns/cig-into#>.
+
+:TIA_Prevention a :MedicalWorkflow ;
+	dc:source """Guidelines for the Prevention of Stroke in Patients with Stroke and Transient Ischemic Attack, 2014, Stroke, p. 2198. 
+Found at https://drive.google.com/file/d/1sNM7HjUuM18_2jLba_35SYZtUrDBlkSC/view?usp=sharing""" ;
+	:hasTask :antiplatelet_treatment , :aspirin_monotherapy , :aspirin_dipyridamole , :clopidogrel_monotherapy ;
+	:hasFirstTask :antiplatelet_treatment .
+	
+:antiplatelet_treatment
+	rdfs:label """Antiplatelet treatment""" ;
+	:hasOutcome :option1 , :option2 , :option3 ;
+	rdfs:comment """1. For patients with noncardioembolic ischemic stroke or TIA, the use of antiplatelet agents rather than oral anticoagulation is recommended to reduce the risk of recurrent stroke and other cardiovascular events (Class I; Level of Evidence A).
+4. The selection of an antiplatelet agent should be individualized on the basis of patient risk factor profiles, cost, tolerance, relative known efficacy of the agents, and other clinical characteristics (Class I; Level of Evidence C).""" .
+
+:aspirin_monotherapy 
+	rdfs:label """Aspirin monotherapy""" ;
+	:hasCondition :option1 ;
+	:involves :presc_aspirin ;
+	rdfs:comment """2. Aspirin (50–325 mg/d) monotherapy (Class I; Level of Evidence A) or the combination of aspirin 25 mg and extended-release dipyridamole 200 mg twice daily (Class I; Level of Evidence B) is indicated as initial therapy after TIA or ischemic stroke for prevention of future stroke. (Revised recommendation)""" .
+
+:aspirin_dipyridamole 
+	rdfs:label """Aspirin and dipyridamole""" ;
+	:hasCondition :option2 ;
+	:involves :presc_aspirin , :presc_dipyridamole ;
+	rdfs:comment """2. Aspirin (50–325 mg/d) monotherapy (Class I; Level of Evidence A) or the combination of aspirin 25 mg and extended-release dipyridamole 200 mg twice daily (Class I; Level of Evidence B) is indicated as initial therapy after TIA or ischemic stroke for prevention of future stroke. (Revised recommendation)""" .
+
+:clopidogrel_monotherapy
+	rdfs:label """Clopidogrel monotherapy""" ;
+	:hasCondition :option3 ;
+	:involves :presc_clopidogrel ;
+	rdfs:comment """3. Clopidogrel (75 mg) monotherapy is a reasonable option for secondary prevention of stroke in place of aspirin or combination aspirin/dipyridamole (Class IIa; Level of Evidence B). This recommendation also applies to patients who are allergic to aspirin.""" .
+	
+
+:presc_aspirin a sct:Prescription; 
+	sct:drugUsed drug:4244 , drug:DB00945 .
+
+:presc_dipyridamole a sct:Prescription; 
+	sct:drugUsed drug:6725 , drug:DB00975 .
+
+:presc_clopidogrel a sct:Prescription; 
+	sct:drugUsed drug:5538, drug:DB00758 .
+
+drug:4244 
+	rdfs:label "acetylsalicylic acid" ;
+	dc:source "DrugCentral" .
+	
+drug:DB00945 
+	rdfs:label "Acetylsalicylic acid" ;
+	dc:source "DrugBank" .
+	
+drug:6725
+	rdfs:label "dipyridamole" ;
+	dc:source "DrugCentral" .
+
+drug:DB00975 
+	rdfs:label "Dipyridamole" ; 
+	dc:source "DrugBank" .
+
+drug:5538 
+	rdfs:label "clopidogrel" ;
+	dc:source "DrugCentral" .
+	
+drug:DB00758
+	rdfs:label "Clopidogrel" ; 
+	dc:source "DrugBank" .

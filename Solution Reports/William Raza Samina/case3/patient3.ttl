@@ -1,0 +1,24 @@
+@prefix fhir: <http://hl7.org/fhir/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix : <http://example.com/> .
+
+:patient3 a fhir:Patient;
+  fhir:Patient.gender [ fhir:value "female"];
+  fhir:Patient.birthDate [ fhir:value "1954-12-01"^^xsd:date];
+  fhir:Patient.deceasedBoolean [ fhir:value "false"^^xsd:boolean].
+  
+:inr_pt3 a fhir:Observation ;
+	fhir:Observation.subject [ fhir:Reference.reference :patient3 ] ;
+	fhir:Observation.code [
+		fhir:CodeableConcept.coding [
+			fhir:Coding.system <http://www.snomed.org> ;
+			fhir:Coding.code "165581004"
+		]
+	] ;
+	fhir:Observation.valueQuantity [
+		fhir:Observation.valueQuantity.value 2.7 ;
+		fhir:Observation.valueQuantity.system <http://unitsofmeasure.org> ;
+		fhir:Observation.valueQuantity.code "{INR}"
+	] .

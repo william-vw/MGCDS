@@ -1,0 +1,154 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix skos: <http://www.w3.org/2004/02/skos/core#>.
+@prefix xml: <http://www.w3.org/XML/1998/namespace>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix dc: <http://purl.org/dc/terms/> .
+@prefix drug: <http://bio2rdf.org/drug:> .
+@prefix sct: <http://snomed.info/id/> .
+@prefix math: <http://www.semanticweb.org/ontologies/2012/5/MathOnt.owl#>.
+@prefix cig: <http://niche.cs.dal.ca/ns/cig-into#> .
+
+@prefix : <http://niche.cs.dal.ca/ns/cig-into#>.
+@base <http://niche.cs.dal.ca/ns/cig-into#>.
+
+:VTE_warfarin a :MedicalWorkflow ;
+	dc:source """Guidance for the practical management of warfarin therapy in the treatment of venous thromboembolism. Witt D Clark N Kaatz S Schnurr T Ansell J. Journal of thrombosis and thrombolysis 2016 vol: 41 (1) pp: 187-205""" ;
+	:hasTask :decide_suitable_vte_anticoagulant, :vte_warfarin_treatment , :other_treatment ;
+	:hasFirstTask :decide_suitable_vte_anticoagulant .
+	
+:decide_suitable_vte_anticoagulant
+	rdfs:label "decide suitable VTE anticoagulant" ;
+	:hasOutcome :yes_warfarin_treatment, :no_warfarin_treatment ;
+	rdfs:comment """We suggest that anticoagulation providers thoroughly discuss the advantages and disadvantages of available anticoagulants with patients and initiate therapy for VTE based on appropriate selection criteria and patient preference.
+For VTE treatment during pregnancy we suggest against using warfarin or DOACs. For VTE treatment in breastfeeding mothers we suggest that warfarin therapy is the best oral anticoagulant option.
+For patients with CrCl < 30 mL/min (estimated using the Cockroft-Gault equation) we suggest warfarin is the preferred anticoagulant. We also suggest vigilant monitoring including more frequent INR testing and bleeding risk assessment in patients withCrCl < 30 mL/min.
+
+For patients with a history of poor medication adherence we suggest warfarin is the preferred oral anticoagulant. 
+However, the requirement for routine INR monitoring of warfarin may be less than ideal for patients with restricted mobility, poor venous access, or other barriers to successful INR monitoring unless they are suitable candidates for self-testing at home using point-of-care INR monitoring devices (see below).
+
+When avoiding drugs known to interact with a given anticoagulant is not an option, we suggest that warfarin is preferred because dose adjustments based on INR monitoring can facilitate titration of the anticoagulant response.""" .
+
+:yes_warfarin_treatment rdfs:label "warfarin" .
+:no_warfarin_treatment rdfs:label "no warfarin" .
+
+:vte_warfarin_treatment a :CompositeTask ;
+	rdfs:label "VTE warfarin treatment" ;
+	:hasCondition :yes_warfarin_treatment ;
+	:hasTask :add_adjusted_warfarin, :enroll_in_ams, :patient_education ;
+	:hasFirstTask :add_adjusted_warfarin ;
+	rdfs:comment """During warfarin initiation for VTE treatment we suggest the following:
+	
+- Initiate warfarin as soon as possible following diagnosis of VTE, preferably on the same day, in combination with UFH, LMWH or fondaparinux.
+- The initial dose of warfarin should be 5 or 10 mg for most patients.
+- Beginning on day 3 of therapy, INRs should be measured daily and warfarin doses adjusted to achieve an INR >= 2.0 as soon after day five of overlap therapy as possible.
+- We suggest against using pharmacogenomic testing to determine initial warfarin doses for most patients.""" .
+	
+:enroll_in_ams rdfs:label "enroll in AMS service" .
+
+:other_treatment
+	:hasCondition :no_warfarin_treatment ;
+	rdfs:label "Other treatment" .
+
+:add_adjusted_warfarin a :CompositeTask ;
+	:order 0 ;
+	rdfs:label "treat with warfarin" ;
+	:hasTask :add_warfarin, :measure_inr_frequently, :inr_value , :adjust_warfarin_treatment, :recheck_inr_after_out_of_range, :reminder_scheduled_inr_tests, :dosage_instructions ;
+	:hasFirstTask :add_warfarin ;
+	rdfs:comment """- Beginning on day 3 of therapy, INRs should be measured daily and warfarin doses adjusted to achieve an INR >= 2.0 as soon after day five of overlap therapy as possible.
+- We suggest against using pharmacogenomic testing to determine initial warfarin doses for most patients.""" .
+
+:add_warfarin :order 0 ;
+	:involves :presc_warfarin .
+	
+:presc_warfarin a sct:Prescription ; 
+	sct:drugUsed drug:DB00682 .
+
+drug:DB00682 
+	rdfs:label "Warfarin" ;
+	dc:source "DrugBank" .
+
+:measure_inr_frequently
+	:order 1 ;
+	rdfs:label "measure INR frequently" ;
+	rdfs:comment """Beginning on day 3 of therapy, INRs should be measured daily and warfarin doses adjusted to achieve an INR >= 2.0 as soon after day five of overlap therapy as possible.""" .
+
+:inr_value
+	:order 2 ;
+	rdfs:label "INR value" ;
+	:hasOutcome :inr_in_range, :inr_out_of_range .
+
+:inr_out_of_range rdfs:label "INR out of range" .
+	
+:adjust_warfarin_treatment a :CompositeTask ;
+	:hasCondition :inr_out_of_range ;
+	:hasTask :check_non_bleeding_elevated_inr, :check_inr_for_non_bleeding_elevated_case, :continue_warfarin_dose_recheck_later, :adjust_warfarin_dose_inr_over_10, :adjust_warfarin_dose_inr_between_4pt5_10, :adjust_warfarin_dose_inr_other_value ;
+	:hasFirstTask :check_non_bleeding_elevated_inr ;
+	:hasNext :recheck_inr_after_out_of_range .
+
+:recheck_inr_after_out_of_range rdfs:label "recheck INR" .
+
+:check_non_bleeding_elevated_inr
+	rdfs:label "check non-bleeding elevated INR" ;
+	:hasOutcome :yes_non_bleeding_elevated_inr, :no_non_bleeding_elevated_inr, :single_inr_out_of_range_stable_history .
+
+:yes_non_bleeding_elevated_inr rdfs:label "elevated" .
+:no_non_bleeding_elevated_inr rdfs:label "non-elevated" . 
+:single_inr_out_of_range_stable_history rdfs:label "1 out-of-range" .
+
+:check_inr_for_non_bleeding_elevated_case
+	rdfs:label "check elevated INR" ;
+	:hasCondition :yes_non_bleeding_elevated_inr ;
+	:hasOutcome :inr_over_10, :inr_between_4pt5_10, :inr_other_value ;
+	rdfs:comment """For non-bleeding patients presenting with an elevated INR we suggest the following:
+	
+- Withholding warfarin alone or in combination with 1.25-2.5 mg of oral vitamin K for INRs between 4.5 and 10.0.
+- 2.5 mg of oral vitamin for INRs > 10.0.""" .
+
+:inr_over_10 rdfs:label "INR>10" .
+:inr_between_4pt5_10 rdfs:label "4.5<=INR<=10" .
+:inr_other_value rdfs:label "other" .
+
+:continue_warfarin_dose_recheck_later
+	rdfs:label "continue warfarin dose" ;
+	:hasCondition :single_inr_out_of_range_stable_history ;
+	rdfs:comment """For patients with previously stable therapeutic INRs presenting with a single out-of-range INR of <= 0.3 INR units below or above the therapeutic range we suggest continuing the current warfarin dose and retesting the INR within 7-14 days. 
+We suggest against the routine use of boost or skipped warfarin doses for unexplained slightly out of range INRs.""" .
+
+:adjust_warfarin_dose_inr_over_10
+	rdfs:label "adjust dose (INR > 10)" ;
+	:hasCondition :inr_over_10 ;
+	rdfs:comment """2.5 mg of oral vitamin for INRs > 10.0.""" .
+	
+:adjust_warfarin_dose_inr_between_4pt5_10
+	rdfs:label "adjust dose (4.5 <= INR <= 10)" ;
+	:hasCondition :inr_between_4pt5_10 ;
+	rdfs:comment """Withholding warfarin alone or in combination with
+1.25-2.5 mg of oral vitamin K for INRs between 4.5
+and 10.0.""" .
+
+:adjust_warfarin_dose_inr_other_value
+	rdfs:label "adjust dose (other INR value)" ;
+	:hasCondition :inr_other_value ;
+	rdfs:comment """Withholding warfarin alone""" .
+
+:enroll_in_ams
+	rdfs:label "enroll in AMS" ;
+	rdfs:comment """We suggest enrolling patients with VTE in an AMS (Anticoagulant Management Services), but when such services are not available, individual clinicians should strive to implement a similar structured care process.""" .
+
+:patient_education
+	:order 1 ;
+	rdfs:comment """We suggest that all patients and their caregivers receive patient-centered education regarding warfarin use for VTE treatment at the initiation of therapy and periodically thereafter.
+	
+For treatment of VTE, we suggest PST and PSM should be accompanied by patient education and reserved for motivated patients who can demonstrate competency with self-testing equipment.""" .
+
+:reminder_scheduled_inr_tests
+	:order 3 ;
+	rdfs:label "test reminder" ;
+	rdfs:comment """For patients who miss scheduled INR tests we suggest the use of non-threatening reminders delivered via phone, text message, email, or regular mail.""" .
+
+:dosage_instructions
+	:order 4 ;
+	rdfs:comment """For patients having difficulty following warfarin dose instructions we suggest anticoagulation providers explore the use of pillboxes, calendars, diaries, electronic reminders, and written instructions as means to improve adherence.""" .
+

@@ -1,0 +1,72 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix skos: <http://www.w3.org/2004/02/skos/core#>.
+@prefix xml: <http://www.w3.org/XML/1998/namespace>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix dc: <http://purl.org/dc/terms/> .
+@prefix drug: <http://bio2rdf.org/drug:> .
+@prefix sct: <http://snomed.info/id/> .
+@prefix math: <http://www.semanticweb.org/ontologies/2012/5/MathOnt.owl#>.
+@prefix cig: <http://niche.cs.dal.ca/ns/cig-into#> .
+
+@prefix : <http://niche.cs.dal.ca/ns/cig-into#>.
+@base <http://niche.cs.dal.ca/ns/cig-into#>.
+
+:Ulcer_Prevention a :MedicalWorkflow ;
+	dc:source """Management of Patients with Ulcer Bleeding, 2012, American Journal of Gastroenterology, p. 3. 
+Found at https://drive.google.com/file/d/1sK3dPAYfhQkumQ44DvTKN9s7swJ-6xKe/view?usp=sharing""" ;
+	:hasTask :type_of_prevention , :secondary_prevention , :primary_prevention ;
+	:hasFirstTask :type_of_prevention .
+	
+:type_of_prevention
+	rdfs:label "Type of prevention" ;
+	:hasOutcome :CVD , :no_CVD .
+
+:secondary_prevention a :CompositeTask ;
+	rdfs:label "Secondary prevention (CVD)" ;
+	:hasCondition :CVD ;
+	:hasTask :resume_aspirin , :add_ppi ; 
+	rdfs:comment """If given for secondary prevention (i.e., established cardiovascular disease) then aspirin should be resumed as soon as possible after bleeding ceases in most patients: ideally within 1 – 3 days and certainly within 7 days. Long-term daily PPI therapy should also be provided.""" .
+
+:resume_aspirin
+	rdfs:label "Resume Aspirin" ;
+	:involves :presc_aspirin ;
+	rdfs:comment """If given for secondary prevention (i.e., established cardiovascular disease) then aspirin should be resumed as soon as possible after bleeding ceases in most patients: ideally within 1 – 3 days and certainly within 7 days.""" .
+
+:add_ppi
+	rdfs:label "Add PPI" ;
+	:involves :presc_PPI ;
+	rdfs:comment """If given for secondary prevention (i.e., established cardiovascular disease) [..] Long-term daily PPI therapy should also be provided.""" .
+	
+:primary_prevention a :CompositeTask ;
+	rdfs:label "Primary prevention (no CVD)" ;
+	:hasCondition :no_CVD ;
+	:hasTask :suspend_aspirin ;
+	rdfs:comment """If given for primary prevention (i.e., no established cardiovascular disease), anti-platelet therapy likely should not be resumed in most patients (Conditional recommendation).""" .
+	
+:suspend_aspirin
+	rdfs:label "Suspend aspirin" ;
+	:involves :suspend_aspirin ;
+	rdfs:comment """If given for primary prevention (i.e., no established cardiovascular disease), anti-platelet therapy likely should not be resumed in most patients (Conditional recommendation).""" .
+
+:presc_aspirin a sct:Prescription; 
+	sct:drugUsed drug:4244 , drug:DB00945 .
+
+:presc_PPI a sct:Prescription; 
+	sct:drugUsed drug:7753 .
+
+:suspend_aspirin a sct:Prescription; 
+	sct:drugUsed drug:4244 , drug:DB00945 .
+
+drug:4244 
+	rdfs:label "acetylsalicylic acid" ;
+	dc:source "DrugCentral" .
+
+drug:DB00945 
+	rdfs:label "Acetylsalicylic acid" ;
+	dc:source "DrugBank" .
+
+drug:7753 
+	rdfs:label "Proton Pump Inhibitors" ;
+	dc:source "DrugCentral" .

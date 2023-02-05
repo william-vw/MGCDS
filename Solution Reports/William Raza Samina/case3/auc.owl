@@ -1,0 +1,142 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix skos: <http://www.w3.org/2004/02/skos/core#>.
+@prefix xml: <http://www.w3.org/XML/1998/namespace>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix dc: <http://purl.org/dc/terms/> .
+@prefix drug: <http://bio2rdf.org/drug:> .
+@prefix sct: <http://snomed.info/id/> .
+@prefix math: <http://www.semanticweb.org/ontologies/2012/5/MathOnt.owl#>.
+@prefix cig: <http://niche.cs.dal.ca/ns/cig-into#> .
+
+@prefix : <http://niche.cs.dal.ca/ns/cig-into#>.
+@base <http://niche.cs.dal.ca/ns/cig-into#>.
+
+:Acute_Uncomplicated_Cystitis a :MedicalWorkflow ;
+	dc:source """International Clinical Practice Guidelines for the Treatment of Acute Uncomplicated Cystitis and Pyelonephritis in Women: A 2010 Update by the Infectious Diseases Society of America and the European Society for Microbiology and Infectious Diseases. 
+Figure 1. Approach to choosing an optimal antimicrobial agent for empirical treatment of acute uncomplicated cystitis. DS, double-strength; UTI, urinary tract infection.""" ;
+	:hasTask :diagnose_auc , :choose_antimicrobial , :alternate_diagnosis , :has_early_pyelonephritis , :non_recommended_antimicrobials , 
+		:treatment_trimethoprim-sulfamethoxazole , :treatment_no_early_pyelonephritis , :treatment_nitrofurantoin_monohydrate_macrocrystals , 
+		:treatment_fosfomycin_trometamol , :treatment_pivmecillinam ;
+	:hasFirstTask :diagnose_auc .
+	
+:diagnose_auc
+	rdfs:label "Diagnose AUC" ;
+	:hasOutcome :positive_auc , :negative_auc ;
+	rdfs:comment """Woman with acute uncomplicated cystitis:
+	- Absence of fever, flank pain, or other suspicion for pyelonephritis
+	- Able to take oral medication
+""" .
+
+:positive_auc rdfs:label "positive" .
+:negative_auc rdfs:label "negative" .
+
+:choose_antimicrobial
+	rdfs:label "Antimicrobial treatment" ;
+	:hasCondition :positive_auc ;
+	:hasOutcome :use_recommended , :use_other ;
+	rdfs:comment """Can one of the recommended antimicrobials* below be used considering:
+	- Availability
+	- Allergy history
+	- Tolerance
+
+*The choice between these agents should be individualized and based on patient allergy and compliance history, 
+local practice patterns, local community resistance prevalence, availability, cost, and patient and provider threshold for failure (see Table 4).""" .
+
+:use_recommended rdfs:label "recommended" .
+:use_other rdfs:label "other" .
+
+:alternate_diagnosis
+	rdfs:label "Alternate diagnosis" ;
+	:hasCondition :negative_auc ;
+	rdfs:comment """Consider alternate diagnosis (such as pyelonephritis or complicated UTI) & treat accordingly (see text)""" .
+
+:has_early_pyelonephritis
+	:hasCondition :use_recommended ;
+	rdfs:label "Early pyelonephritis?" ;
+	:hasOutcome :positive_pyelonephritis , :negative_pyelonephritis .
+
+:positive_pyelonephritis rdfs:label "yes" .
+:negative_pyelonephritis rdfs:label "no" .
+
+:non_recommended_antimicrobials
+	:hasCondition :use_other ;
+	rdfs:label "Non-recommended antimicrobials" .
+
+:treatment_trimethoprim-sulfamethoxazole
+	rdfs:label "Trimethoprim-sulfamethoxazole" ;
+	:hasCondition :positive_pyelonephritis ;
+	:involves :presc_tmp_smx ;
+	rdfs:comment """Trimethoprim-sulfamethoxazole 160/800 mg (one DS tablet) bid X 3 days (avoid if resistance prevalence is known to exceed 20 or if used for UTI in previous 3 months)""".
+
+:presc_tmp_smx a sct:Prescription ; 
+	sct:drugUsed drug:5138 , drug:DB00440 .
+	
+drug:5138 
+	rdfs:label "trimethoprim" ;
+	dc:source "DrugCentral" .
+
+drug:DB00440 
+	rdfs:label "Trimethoprim" ;
+	dc:source "DrugBank" .
+
+:treatment_no_early_pyelonephritis
+	:hasCondition :negative_pyelonephritis ;
+	rdfs:label "No early pyelonephritis" ;
+	:hasOutcome :optionA1 , :optionA2 , :optionA3 .
+
+:optionA1 rdfs:label "option1" .
+:optionA2 rdfs:label "option2" .
+:optionA3 rdfs:label "option3" .
+
+:treatment_nitrofurantoin_monohydrate_macrocrystals
+	rdfs:label "Nitrofurantoin" ;
+	:hasCondition :optionA1 ;
+	:involves :presc_nitrofurantoin ;
+	rdfs:comment """Nitrofurantoin monohydrate/macrocrystals 100mg bid X 5 days (avoid if early pyelonephritis suspected)""" .
+
+:presc_nitrofurantoin a sct:Prescription ;
+	sct:drugUsed drug:4598 , drug:DB00698 .
+		
+drug:4598 
+	rdfs:label "nitrofurantoin" ; 
+	dc:source "DrugCentral" .
+
+drug:DB00698
+	rdfs:label "Nitrofurantoin" ;
+	dc:source "DrugBank" .
+		
+:treatment_fosfomycin_trometamol
+	rdfs:label "Fosfomycin trometamol" ;
+	:hasCondition :optionA2 ;
+	:involves :presc_fosfomycin ;
+	rdfs:comment """Fosfomycin trometamol 3 gm single dose (lower efficacy than some other recommended agents; avoid if early pyelonephritis suspected)""" .
+	
+:presc_fosfomycin a sct:Prescription ; 
+	sct:drugUsed drug:4045 , drug:DB00828 .
+	
+drug:4045 
+	rdfs:label "fosfomycin" ;
+	dc:source "DrugCentral" .
+
+drug:DB00828 
+	rdfs:label "Fosfomycin" ;
+	dc:source "DrugBank" .
+	
+:treatment_pivmecillinam
+	rdfs:label "Pivmecillinam" ;
+	:hasCondition :optionA3 ;
+	:involves :presc_pivmecillinam ;
+	rdfs:comment """Pivmecillinam 400 mg bid x 5 days (lower efficacy than some other recommended agents; avoid if early pyelonephritis suspected)""" .
+
+:presc_pivmecillinam a sct:Prescription ; 
+	sct:drugUsed drug:6481 , drug:DB01605 .
+	
+drug:6481 
+	rdfs:label "pivmecillinam" ; 
+	dc:source "DrugCentral" .
+
+drug:DB01605 
+	rdfs:label "Pivmecillinam" ; 
+	dc:source "DrugBank" .
